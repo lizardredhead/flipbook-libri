@@ -1,0 +1,16 @@
+{
+  "name": "github-pages-webp-flipbook",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Conversione automatica PDF -> WebP e viewer statico lazy-loading per GitHub Pages.",
+  "type": "commonjs",
+  "scripts": {
+    "build-books": "node scripts/build-book.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "license": "MIT"
+}
