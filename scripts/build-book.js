@@ -10,7 +10,11 @@
  * - poppler-utils: pdfinfo, pdftoppm
  * - webp: cwebp
  *
- * Su GitHub Actions vengono installati dal workflow.
+ * Note:
+ * - Lo script evita la riconversione se l'hash SHA-256 del PDF non è cambiato.
+ * - La conversione PDF -> PNG viene fatta da Poppler.
+ * - La conversione PNG -> WebP viene fatta da cwebp.
+ * - Il viewer non usa il PDF: legge solo manifest.json e pagine WebP.
  */
 
 const fs = require("node:fs/promises");
@@ -31,7 +35,7 @@ const PAGES_DIR_NAME = "pages";
 const MANIFEST_NAME = "manifest.json";
 
 // Parametri bilanciati: buona leggibilità, peso contenuto.
-// Puoi ridurre DPI o qualità se il repository cresce troppo.
+// Puoi ridurre questi valori se il repository cresce troppo.
 const DPI = Number(process.env.BOOK_DPI || 140);
 const WEBP_QUALITY = Number(process.env.WEBP_QUALITY || 78);
 const WEBP_METHOD = Number(process.env.WEBP_METHOD || 5);
@@ -73,6 +77,7 @@ async function sha256File(filePath) {
   return new Promise((resolve, reject) => {
     const hash = crypto.createHash("sha256");
     const stream = fssync.createReadStream(filePath);
+
     stream.on("data", (chunk) => hash.update(chunk));
     stream.on("error", reject);
     stream.on("end", () => resolve(hash.digest("hex")));
@@ -105,6 +110,7 @@ async function getBookDirectories() {
   }
 
   const entries = await fs.readdir(BOOKS_DIR, { withFileTypes: true });
+
   return entries
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
@@ -142,6 +148,7 @@ async function pagesComplete(bookDir, pageCount) {
 
 async function removeOldBuildDirs(bookDir) {
   const entries = await fs.readdir(bookDir, { withFileTypes: true });
+
   await Promise.all(
     entries
       .filter((entry) => entry.isDirectory() && entry.name.startsWith(".pages-build-"))
@@ -151,6 +158,7 @@ async function removeOldBuildDirs(bookDir) {
 
 async function runLimited(items, limit, worker) {
   const queue = [...items];
+
   const workers = Array.from({ length: Math.min(limit, queue.length) }, async () => {
     while (queue.length > 0) {
       const item = queue.shift();
@@ -161,8 +169,38 @@ async function runLimited(items, limit, worker) {
   await Promise.all(workers);
 }
 
+/**
+ * Poppler/pdftoppm può generare nomi leggermente diversi a seconda della versione:
+ * - page-1.png
+ * - page-01.png
+ * - page-001.png
+ * - page-000001.png
+ *
+ * La vecchia versione dello script cercava solo page-1.png.
+ * Questa funzione invece legge davvero i file prodotti e li mappa per numero pagina.
+ */
+async function discoverGeneratedPngs(tmpRoot) {
+  const entries = await fs.readdir(tmpRoot, { withFileTypes: true });
+  const pngMap = new Map();
+
+  for (const entry of entries) {
+    if (!entry.isFile()) continue;
+
+    const match = entry.name.match(/^page-(\d+)\.png$/i);
+    if (!match) continue;
+
+    const pageNumber = Number.parseInt(match[1], 10);
+    if (!Number.isInteger(pageNumber) || pageNumber <= 0) continue;
+
+    pngMap.set(pageNumber, path.join(tmpRoot, entry.name));
+  }
+
+  return pngMap;
+}
+
 async function convertPdfToWebP({ bookName, bookDir, pdfPath, pageCount }) {
-  const tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), `book-${bookName}-`));
+  const safeBookName = bookName.replace(/[^a-zA-Z0-9._-]/g, "-");
+  const tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), `book-${safeBookName}-`));
   const pngPrefix = path.join(tmpRoot, "page");
   const nextPagesDir = path.join(bookDir, `.pages-build-${Date.now()}`);
   const finalPagesDir = path.join(bookDir, PAGES_DIR_NAME);
@@ -173,9 +211,34 @@ async function convertPdfToWebP({ bookName, bookDir, pdfPath, pageCount }) {
   try {
     log(`${bookName}: converto PDF in PNG temporanei con Poppler, DPI=${DPI}`);
 
-    await execFileAsync("pdftoppm", ["-r", String(DPI), "-png", pdfPath, pngPrefix], {
-      maxBuffer: 1024 * 1024 * 20,
-    });
+    await execFileAsync(
+      "pdftoppm",
+      [
+        "-r",
+        String(DPI),
+        "-png",
+        "-f",
+        "1",
+        "-l",
+        String(pageCount),
+        pdfPath,
+        pngPrefix,
+      ],
+      { maxBuffer: 1024 * 1024 * 50 }
+    );
+
+    const pngMap = await discoverGeneratedPngs(tmpRoot);
+
+    if (pngMap.size === 0) {
+      const generatedFiles = await fs.readdir(tmpRoot);
+      throw new Error(
+        `Poppler non ha generato PNG riconoscibili. File trovati in tmp: ${
+          generatedFiles.join(", ") || "nessuno"
+        }`
+      );
+    }
+
+    log(`${bookName}: PNG temporanei trovati: ${pngMap.size}/${pageCount}`);
 
     const pageNumbers = Array.from({ length: pageCount }, (_, index) => index + 1);
 
@@ -184,11 +247,14 @@ async function convertPdfToWebP({ bookName, bookDir, pdfPath, pageCount }) {
     );
 
     await runLimited(pageNumbers, CWEBP_CONCURRENCY, async (page) => {
-      const inputPng = `${pngPrefix}-${page}.png`;
+      const inputPng = pngMap.get(page);
       const outputWebp = path.join(nextPagesDir, pageFileName(page, pageCount));
 
-      if (!(await pathExists(inputPng))) {
-        throw new Error(`PNG temporaneo mancante per pagina ${page}: ${inputPng}`);
+      if (!inputPng) {
+        const generatedFiles = await fs.readdir(tmpRoot);
+        throw new Error(
+          `PNG temporaneo mancante per pagina ${page}. File trovati: ${generatedFiles.join(", ")}`
+        );
       }
 
       await execFileAsync(
@@ -205,7 +271,7 @@ async function convertPdfToWebP({ bookName, bookDir, pdfPath, pageCount }) {
           "-o",
           outputWebp,
         ],
-        { maxBuffer: 1024 * 1024 * 20 }
+        { maxBuffer: 1024 * 1024 * 50 }
       );
     });
 
@@ -264,6 +330,7 @@ async function buildBook(bookName) {
   await fs.writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 
   log(`${bookName}: generato ${MANIFEST_NAME} e ${pageCount} pagina/e WebP.`);
+
   return { bookName, status: "generated", pageCount };
 }
 
