@@ -1,0 +1,10 @@
+{
+  "title": "dore-5anni",
+  "pdf": "documento.pdf",
+  "pageCount": 110,
+  "format": "webp",
+  "pagesPath": "pages",
+  "pagePattern": "page-{n}.webp",
+  "hash": "ecb73a8c72a8dcfcf2157deec99395ac167db09881894d6cf6a27e40868a04a4",
+  "generatedAt": "2026-05-20T20:18:46.294Z"
+}
