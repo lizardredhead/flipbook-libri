@@ -1,0 +1,55 @@
+name: Build flipbook pages
+
+on:
+  push:
+    paths:
+      - "books/**/documento.pdf"
+      - "scripts/**"
+      - "package.json"
+      - ".github/workflows/build-books.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-books:
+    name: Convert PDFs to WebP pages
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils webp
+
+      - name: Install npm dependencies
+        run: npm install --package-lock=false
+
+      - name: Build books
+        run: npm run build-books
+
+      - name: Commit generated WebP pages and manifests
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add books
+
+          if git diff --cached --quiet; then
+            echo "No generated book changes to commit."
+            exit 0
+          fi
+
+          git commit -m "Build flipbook WebP pages"
+          git push
