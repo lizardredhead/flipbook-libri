@@ -1,0 +1,10 @@
+{
+  "title": "itstime-senior",
+  "pdf": "documento.pdf",
+  "pageCount": 66,
+  "format": "webp",
+  "pagesPath": "pages",
+  "pagePattern": "page-{n}.webp",
+  "hash": "eafa24488b5e1ba70796f07e2591babd1cd71cfd9dec178a597179b92ee9b801",
+  "generatedAt": "2026-05-20T21:05:59.670Z"
+}

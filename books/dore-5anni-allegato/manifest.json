@@ -1,0 +1,10 @@
+{
+  "title": "dore-5anni-allegato",
+  "pdf": "documento.pdf",
+  "pageCount": 102,
+  "format": "webp",
+  "pagesPath": "pages",
+  "pagePattern": "page-{n}.webp",
+  "hash": "ae70dac9b9b23b6b9bc2891a415584940fc348725de9349c91e562ec93e1a8d3",
+  "generatedAt": "2026-05-20T21:00:04.784Z"
+}

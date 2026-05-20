@@ -1,0 +1,10 @@
+{
+  "title": "dore-3anni-allegato",
+  "pdf": "documento.pdf",
+  "pageCount": 50,
+  "format": "webp",
+  "pagesPath": "pages",
+  "pagePattern": "page-{n}.webp",
+  "hash": "16c8e06ddc4c689a8f219601fb23797a249f928fbe1bf849d15080c00d320f3c",
+  "generatedAt": "2026-05-20T20:52:18.292Z"
+}

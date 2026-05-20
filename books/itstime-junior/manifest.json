@@ -1,0 +1,10 @@
+{
+  "title": "itstime-junior",
+  "pdf": "documento.pdf",
+  "pageCount": 50,
+  "format": "webp",
+  "pagesPath": "pages",
+  "pagePattern": "page-{n}.webp",
+  "hash": "bc60de78d60f243dde110a9fe53e9bff172ed0e7b47e919b9eb8fcc14da55f1b",
+  "generatedAt": "2026-05-20T21:03:03.688Z"
+}
