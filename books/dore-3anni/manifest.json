@@ -1,0 +1,10 @@
+{
+  "title": "dore-3anni",
+  "pdf": "documento.pdf",
+  "pageCount": 74,
+  "format": "webp",
+  "pagesPath": "pages",
+  "pagePattern": "page-{n}.webp",
+  "hash": "1620331eee8b77593056a2f24cd35855761728e37bcac9bb359e39c654c4859c",
+  "generatedAt": "2026-05-20T20:07:52.301Z"
+}
