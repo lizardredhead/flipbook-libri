@@ -1,0 +1,10 @@
+{
+  "title": "goccia-mare-4anni",
+  "pdf": "documento.pdf",
+  "pageCount": 66,
+  "format": "webp",
+  "pagesPath": "pages",
+  "pagePattern": "page-{n}.webp",
+  "hash": "dee5a5b6150178fa3fb5582a2c2dd9b0df70f9acf9fe0d36df34071cf569feb3",
+  "generatedAt": "2026-05-24T18:51:14.907Z"
+}
