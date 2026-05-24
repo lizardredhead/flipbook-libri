@@ -1,0 +1,10 @@
+{
+  "title": "dore-4anni",
+  "pdf": "documento.pdf",
+  "pageCount": 98,
+  "format": "webp",
+  "pagesPath": "pages",
+  "pagePattern": "page-{n}.webp",
+  "hash": "b60f7f1ed845d13973e5997f9596cd363fec435968bb613d333f20507e1a89d3",
+  "generatedAt": "2026-05-20T20:56:05.809Z"
+}

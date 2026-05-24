@@ -1,0 +1,10 @@
+{
+  "title": "suoni-sorrisi",
+  "pdf": "documento.pdf",
+  "pageCount": 50,
+  "format": "webp",
+  "pagesPath": "pages",
+  "pagePattern": "page-{n}.webp",
+  "hash": "fd680ce5a988517d1e8aea55adfed455289c708c0c9f74a23124352173ebd00d",
+  "generatedAt": "2026-05-20T21:08:05.453Z"
+}

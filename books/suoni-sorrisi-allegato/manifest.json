@@ -1,0 +1,10 @@
+{
+  "title": "suoni-sorrisi-allegato",
+  "pdf": "documento.pdf",
+  "pageCount": 16,
+  "format": "webp",
+  "pagesPath": "pages",
+  "pagePattern": "page-{n}.webp",
+  "hash": "0c8a0c109e1dc56c66ca76b6c0e50747d231a4dba046cb2b8ef01d3b3eb4aa5c",
+  "generatedAt": "2026-05-20T21:08:31.499Z"
+}

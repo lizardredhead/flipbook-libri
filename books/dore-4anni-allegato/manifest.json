@@ -1,0 +1,10 @@
+{
+  "title": "dore-4anni-allegato",
+  "pdf": "documento.pdf",
+  "pageCount": 50,
+  "format": "webp",
+  "pagesPath": "pages",
+  "pagePattern": "page-{n}.webp",
+  "hash": "676083f10cf4dfbeeedb26114fbe12769dace7c5d33e90367bdc39e6ffedd373",
+  "generatedAt": "2026-05-20T20:57:43.494Z"
+}
