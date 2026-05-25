@@ -1,0 +1,10 @@
+{
+  "title": "goccia-mare-3anni",
+  "pdf": "documento.pdf",
+  "pageCount": 50,
+  "format": "webp",
+  "pagesPath": "pages",
+  "pagePattern": "page-{n}.webp",
+  "hash": "fa1893adebf76221e212096f167dc643481bc7a219cd74cded5d182fbf874246",
+  "generatedAt": "2026-05-25T17:04:01.857Z"
+}
