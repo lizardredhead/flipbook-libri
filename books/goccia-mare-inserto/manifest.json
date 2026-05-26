@@ -1,0 +1,10 @@
+{
+  "title": "goccia-mare-inserto",
+  "pdf": "documento.pdf",
+  "pageCount": 15,
+  "format": "webp",
+  "pagesPath": "pages",
+  "pagePattern": "page-{n}.webp",
+  "hash": "3757522a5a9a23ba6e11ed684cc68992db4361894a37e48779948749751f37fa",
+  "generatedAt": "2026-05-26T20:18:48.419Z"
+}
